@@ -1,2 +1,7 @@
 Welcome to the group project 
-Post any ideas on what we should do here 
+The team has decided to create a program of experimental randomisation
+The program will focus on reducing biased during trials by:
+Asking the user to specify the sample size, sample type (control, treatment), time of treatment, time taken 
+With these infomartion it will output a timetable of when the controls and treatments should take place 
+Attempt to double-blind with code
+ 
