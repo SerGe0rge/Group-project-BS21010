@@ -74,7 +74,7 @@ for x in codes:
 
 sorted(compiledlist)#combine treatmentlist and controllist
 random.shuffle(compiledlist)
-random.shuffle(compiledlist)
+random.shuffle(compiledlist)#shuffled 2 times to ensure randomness
 print(compiledlist)
 
 #to do: 
@@ -82,14 +82,4 @@ print(compiledlist)
 #middle position checking, variable beside are all not lower/uppercase. 
 #prevents consecutive testing of either controls or treatments
 #after that then proceed to break out of loop
-
-
-#days = int(input("How many day(s) will these experiments be conducted over? "))
-#dayslist = [d for d in range(1, days+1)]
-
-#totaltime = time * (len(treatmentlist) + len(controllist))
-#numexpt = totaltime / days
-
-#print("{} experiment(s) will be conducted over {} days. Duration of each experiment is {} hour(s)."
-      #.format(numexpt, days, time))
 
