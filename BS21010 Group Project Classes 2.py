@@ -15,9 +15,15 @@ class number_of_controls:
         return
         
       
-    def get_valid_controls(self):
-        while True:
+    def get_controls(self):
+     
             controls = input("Number of controls: ")
+            return controls
+            
+            
+    def get_valid_controls(self):
+        
+        while controls == True:
             
             if controls.isdigit():
                 controls = int(controls)
@@ -27,15 +33,22 @@ class number_of_controls:
                 print("Invalid input. Please enter a whole number.")
                 
                 
-    def get_valid_treatments(self):
-        while True:
+    def treatments(self):
+     
             treatments = input("Number of treatments: ")
+            return treatments
+            
+            
+    def get_valid_treatments(self):
+        
+        while treatments == True:
             
             if treatments.isdigit():
                 treatments = int(treatments)
                 return treatments
+                
             else:
-                print("Invalid input. Please enter a whole number."
+                print("Invalid input. Please enter a whole number.")
                       
                 
     def codegenerator(self): 
@@ -53,8 +66,7 @@ class number_of_controls:
         for t in range(treatments):
             treatmentlist.append(''.join(random.choice(treatment_codes)))
 
-        return controllist, treatmentlist
-    codes = codegenerator()      
+        return controllist, treatmentlist   
     
 
     def displaycodes(self):
@@ -70,11 +82,10 @@ class number_of_controls:
         for y in treatmentlist: 
             count1 += 1 
             print("Treatment Code {}: {}".format(count1, y))
+  
 
-    display = displaycodes()  
-
-    compiledlist = []
-    for x in codes:
-        for y in x:
-            compiledlist.append(y)
+        compiledlist = []
+        for x in codes:
+            for y in x:
+                return compiledlist.append(y)
 
