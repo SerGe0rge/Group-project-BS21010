@@ -7,60 +7,79 @@
 import random
 import string
 from itertools import permutations
+import math
 
 
 class number_of_controls:
     
-    def __init__(self):
-        return
+    def __init__(self, controls, treatments, totalsample, tcl_codes_list, logtotalsample, roundedtotal):
         
-     def get_valid_controls(self):
+        if self.check_controls(controls):
+            self.controls = controls
+        else:
+             print("Invalid input. Please enter a whole number.")
+                
+                
+        if self.check_treatments(treatments):
+            self.treatments = treatments
+        else:
+             print("Invalid input. Please enter a whole number.")
+                
+        self.totalsample = totalsample
+        self.tcl_codes_list = tcl_codes_list
+        self.logtotalsample = logtotalsample
+        self.roundedtotal = roundedtotal
         
-        while true:
-            controls = input("Number of controls: ")
+                               
+    def get_valid_controls(self,controls):
+        
        
-            if controls.isdigit():
-                controls = int(controls)
-                return controls
-                
-            else:
-                print("Invalid input. Please enter a whole number.")
-                
-                
-    def get_valid_treatments(self):
+        try:
+            value=int(self.controls)
+            
+            if value>0 and value<17576:
+                return True
+            
+        except:
+            return False
+            
+    def get_valid_treatments(self,treatments):
         
-        while true:
-            treatments = input("Number of treatments: ")
        
-            if treatments.isdigit():
-                treatments = int(treatments)
-                return treatments
+        try:
+            value=int(self.treatments)
+            
+            if value>0 and value<17576:
+                return True 
+            
+        except:
+            return False
                 
-            else:
-                print("Invalid input. Please enter a whole number.")
-    
                 
-    def codegenerator(self): 
-    
-        letters_lc = list(string.ascii_lowercase)
-        letters_uc = list(string.ascii_uppercase)
+             
+    def codegenerator(self, totalsample, logtotalsample, roundedtotal, tcl_codes_list): 
+        
+        self.totalsample = self.controls + self.treatments 
+        
+        
+        if totalsample <= 17576:
+            
+            self.logtotalsample = math.log(totalsample,26)
 
-        control_codes = list(permutations(letters_lc, 3))
-        controllist = []
-        for c in range(controls):
-            controllist.append(''.join(random.choice(control_codes)))
+            self.roundedtotal = math.ceil(logtotalsample)
 
-        treatment_codes = list(permutations(letters_uc, 3))
-        treatmentlist = []
-        for t in range(treatments):
-            treatmentlist.append(''.join(random.choice(treatment_codes)))
+        
+            letters_lc = list(string.ascii_lowercase)
+            self.tcl_codes = list(permutations(letters_lc, 3))
+            
+            self.tcl_codes_list = []
+            for c in range(roundedtotal):
+                self.tcl_codes_list.append(''.join(random.choice(self.tcl_codes)))
+                return self.tcl_codes_list
 
-        return controllist, treatmentlist   
-    
+        else:
 
-    def displaycodes(self):
-    
-        controllist, treatmentlist = codes
+            print("Please make sure that control and treatment experiments do not exceed 17576 experiments")
 
         count = 0
         for x in controllist:
@@ -77,4 +96,3 @@ class number_of_controls:
         for x in codes:
             for y in x:
                 return compiledlist.append(y)
-
