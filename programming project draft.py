@@ -75,11 +75,62 @@ for x in codes:
 sorted(compiledlist)#combine treatmentlist and controllist
 random.shuffle(compiledlist)
 random.shuffle(compiledlist)#shuffled 2 times to ensure randomness
-print(compiledlist)
+
+days = int(input('How many days will this experiment be conducted over? '))
+#from stackoverflow, converting the number input into a list of days 
+dayslist = ['Day ' + str(num) for num in range(1, days+1)]
+
+
+numexpt = int(input('How many experiments do you plan to do in a day? '))
+#from stackoverflow, to break into multiple list of desired number of experiments
+compiles = [compiledlist[x:x+numexpt] for x in range(0, len(compiledlist), numexpt)]
+
+combine = itertools.zip_longest(dayslist, compiles)
+daysdict = dict(combine)
+
+for key,value in daysdict.items():
+    print(key, value)
+
+def save(result):
+    """this function provides the user an option to save their report under a name of their choice
+       e.g. save(report)
+       check your directory to locate the saved file"""
+    
+    flag1 = True
+    while flag1: 
+
+        savefile = input('\nWould you like to save the report:\n1. Yes\n2. No\n?')
+        
+        if savefile.isdigit():
+            savefile = int(savefile)
+            
+        if savefile in range(1,3):
+            flag1 = False
+
+        else: 
+            print('Please enter a valid number')
+
+    if savefile == 1:
+
+        filename = input('Enter a file name: ')
+        with open(filename, 'w') as wf:
+            
+            for key,value in daysdict.items():
+                print(key, value, file = wf)
+            
+
+        yes = 'Your report has been saved. Thank you very much for using this program.'
+        return yes
+
+
+    if savefile == 2:
+        no = 'Your report has not been saved. Thank you very much for using this program.'
+        return no  
+
+save(daysdict)
 
 #to do: 
-#check if controls and treatments are shuffled properly
-#middle position checking, variable beside are all not lower/uppercase. 
-#prevents consecutive testing of either controls or treatments
-#after that then proceed to break out of loop
-
+#error checking needed to assign values to keys in dictionary
+#ensure that all lists are assigned to a particular day, if not put the remaining into None key
+#if not enough keys for each value, i.e. not enough number of days for the number of sets of experiments
+#print out your experiments cannnot be completed in the assigned number of days. 
