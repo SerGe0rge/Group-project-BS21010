@@ -14,17 +14,11 @@ class number_of_controls:
     def __init__(self):
         return
         
-      
-    def get_controls(self):
-     
-            controls = input("Number of controls: ")
-            return controls
-            
-            
-    def get_valid_controls(self):
+     def get_valid_controls(self):
         
-        while controls == True:
-            
+        while true:
+            controls = input("Number of controls: ")
+       
             if controls.isdigit():
                 controls = int(controls)
                 return controls
@@ -33,23 +27,18 @@ class number_of_controls:
                 print("Invalid input. Please enter a whole number.")
                 
                 
-    def treatments(self):
-     
-            treatments = input("Number of treatments: ")
-            return treatments
-            
-            
     def get_valid_treatments(self):
         
-        while treatments == True:
-            
+        while true:
+            treatments = input("Number of treatments: ")
+       
             if treatments.isdigit():
                 treatments = int(treatments)
                 return treatments
                 
             else:
                 print("Invalid input. Please enter a whole number.")
-                      
+    
                 
     def codegenerator(self): 
     
