@@ -81,6 +81,8 @@ class number_of_controls:
 
             print("Please make sure that control and treatment experiments do not exceed 17576 experiments")
 
+    def displaycode():
+        
         count = 0
         for x in controllist:
             count += 1
