@@ -81,18 +81,19 @@ class CodeGenerator():
         #assigning remaining portion of codes to controllist
         self.controllist = copy.deepcopy(separate[1])
         
-        #compiling the codes again to reshuffle 
+        #compiling the codes in "joinedshuffle" again to reshuffle 
         self.joinedshuffle = self.treatmentlist + self.controllist 
 
-        #shuffling the mimiclist after assigning codes to treatment and control list so the assigned codes are jumbled
+        #shuffling the new list after assigning codes to treatment and control list so the assigned codes are jumbled
         random.shuffle(self.joinedshuffle)
         
     def tabulateblind(self):
         """this table is displayed in the output, since it is blinded. 
            it is available for viewing as an output for everyone.
            table can then be saved if the user wished to."""
+        
         #.lower() is used to blind the uppercase treatments before displaying as an output
-        #"mimics" list will divide the compiled list of controls and treatments into equal chunks as decided by the user.
+        #"mimics" list will divide the "joinedshuffle" list of controls and treatments into equal chunks as decided by the user.
         lowerlist = [y.lower() for y in self.joinedshuffle]
         dayslist = ['Day ' + str(num) for num in range(1, days+1)]
         mimics = [lowerlist[x:x+self.numexpt] for x in range(0, len(lowerlist), self.numexpt)]
