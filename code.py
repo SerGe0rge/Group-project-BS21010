@@ -175,8 +175,10 @@ class main_code:
             self.joinedshuffle = self.treatmentlist + self.controllist 
     
             #shuffling the new list after assigning codes to treatment and control list so the assigned codes are jumbled
-            self.final_list = random.shuffle(self.joinedshuffle)  
-            return self.final_list    
+            self.final_list = copy.deepcopy(random.shuffle(self.joinedshuffle))  
+            draftlist =  random.shuffle(self.joinedshuffle)
+            final_list = copy.deepcopy(draftlist)
+            return self.final_list     
     
 
            
