@@ -6,190 +6,7 @@ Created on Wed Dec 16 11:04:31 2020
 @author: sophiestavrides
 """
 
-import random
-import string
-from itertools import permutations
-import math
-from tkinter import *
-from tkinter import filedialog
-
-
-class CodeGenerator():
-    
-    def __init__(self, controls, treatments, days, numexpt):
-        self.controls = controls
-        self.treatments = treatments
-        self.days = days
-        self.numexpt = numexpt
-        self.tcl_codes_list = None
-        self.treatmentlist = None
-        self.controllist = None
-        self.joinedshuffle = None
-        
-         
-        
-    def codegenerator(self): 
-        """generates lowercase 3 letter codes for the total number of controls and treatments to be conducted"""
-
-        totalsample = self.controls + self.treatments       
-
-        #checking is done first to fulfill that total number of samples does not exceed 17576.
-        #17576 = 26^3(total number of permutations of 3-letter codes before repeats can occur)
-        if totalsample >= 17576:
-
-            print("Please make sure that control and treatment experiments do not exceed 17576 experiments")
-
-        else:
-            #operations below is not necessary as logtotalsample returns an increasingly small value(=1) as the size of  
-            #totalsample increase, hence I have comment out the formulas below. 
-            #logtotalsample = math.log(totalsample,26)
-            #roundedtotal = math.ceil(logtotalsample)
-
-            letters_lc = list(string.ascii_lowercase)
-            tcl_codes = list(permutations(letters_lc, 3))
-
-            self.tcl_codes_list = []
-            for c in range(totalsample):
-                self.tcl_codes_list.append(''.join(random.choice(tcl_codes)))
-
-            return self.tcl_codes_list
-        
-
-    def assigncodes(self):
-        """assigning codes from the codegenerator to the treatments and controls list"""
-        
-        nums = [self.controls, self.treatments]
-        it = iter(self.tcl_codes_list)
-        separate = [[next(it) for _ in range(num)] for num in nums]
-        
-        #assigning first portion of codes to treatmentlist
-        #treatment codes are capitalised first to provide an unblinded version of table.
-        self.treatmentlist = copy.deepcopy(separate[0])
-        self.treatmentlist = [t.upper() for t in self.treatmentlist]
-        
-        #assigning remaining portion of codes to controllist
-        self.controllist = copy.deepcopy(separate[1])
-        
-        #compiling the codes in "joinedshuffle" again to reshuffle 
-        self.joinedshuffle = self.treatmentlist + self.controllist 
-
-        #shuffling the new list after assigning codes to treatment and control list so the assigned codes are jumbled
-        random.shuffle(self.joinedshuffle)
-        
-    def tabulateblind(self):
-        """this table is displayed in the output, since it is blinded. 
-           it is available for viewing as an output for everyone.
-           table can then be saved if the user wished to."""
-        
-        #.lower() is used to blind the uppercase treatments before displaying as an output
-        #"mimics" list will divide the "joinedshuffle" list of controls and treatments into equal chunks as decided by the user.
-        lowerlist = [y.lower() for y in self.joinedshuffle]
-        dayslist = ['Day ' + str(num) for num in range(1, days+1)]
-        mimics = [lowerlist[x:x+self.numexpt] for x in range(0, len(lowerlist), self.numexpt)]
-
-        if len(mimics) == len(dayslist):
-            combine = itertools.zip_longest(dayslist, mimics)
-            daysdict = dict(combine)
-
-            for key,value in daysdict.items():
-                print(key, value)
-                
-            print("-Assignment is Complete-")
-
-        if len(mimics) < len(dayslist):
-            
-            combine = itertools.zip_longest(dayslist, mimics)
-            daysdict = dict(combine)
-
-            for key,value in daysdict.items():
-                print(key, value)
-                
-            print("You have extra day(s) left for experiment.")
-
-        if len(mimics) > len(dayslist):
-            combine = itertools.zip_longest(dayslist, mimics)
-            daysdict = dict(combine)
-
-            for key,value in daysdict.items():
-                print(key, value)
-
-            print("Sorry, all of your experiments cannot be accommodated in the given timeframe.")
-            
-        
-            
-            
-            
-
-        
-        
-    def tabulateunblind(self):
-        """this table is not displayed in the output, it is saved directly into a file to prevent viewing. 
-           it should not be seen by scientists conducting the experiments.
-           table should only be viewed by scientist planning and assigning roles to the ones conducting experiments."""
-           #this table is only set to being saved to a document and not produced as an output for user to see
-           #user can choose to see the table in the saved file
-        
-        dayslist = ['Day ' + str(num) for num in range(1, days+1)]
-        mimics = [self.joinedshuffle[x:x+self.numexpt] for x in range(0, len(self.joinedshuffle), self.numexpt)]
-        
-        flag = True
-        while flag: 
-
-            savefile = input('This is a unblinded table and can only be viewed after saving\nWould you like to save the table:\n1. Yes\n2. No\n?')
-
-            if savefile.isdigit():
-                savefile = int(savefile)
-
-            if savefile in range(1,3):
-                flag = False
-
-            else: 
-                print('Please enter a valid number')
-
-        if savefile == 1:
-            
-            filename = input('Enter a file name: ')
-
-            if len(mimics) == len(dayslist):
-                combine = itertools.zip_longest(dayslist, mimics)
-                daysdict = dict(combine)
-                
-                with open(filename, 'w') as wf:
-                    for key,value in daysdict.items():
-                        print(key, value, file = wf)
-
-                return "-Table has been saved-"
-
-            if len(mimics) < len(dayslist):
-
-                combine = itertools.zip_longest(dayslist, mimics)
-                daysdict = dict(combine)
-
-                with open(filename, 'w') as wf:
-                    for key,value in daysdict.items():
-                        print(key, value, file = wf)
-                        print("You have extra day(s) left for experiment.", file = wf)
-                        
-                return "-Table has been saved-"
-
-            if len(mimics) > len(dayslist):
-                combine = itertools.zip_longest(dayslist, mimics)
-                daysdict = dict(combine)
-
-                with open(filename, 'w') as wf:
-                    for key,value in daysdict.items():
-                        print(key, value, file = wf)
-                        print("Sorry, all of your experiments cannot be accommodated in the given timeframe.", file = wf)
-                        
-                return "-Table has been saved-"
-        
-        if savefile == 2:
-            
-            no = 'Your table has not been saved. Thank you very much for using this program.'
-            return no 
-        
-
-class number_of_controls:
+class main_code:
     
 
     def __init__(self):
@@ -199,6 +16,12 @@ class number_of_controls:
         self.days = 0
         self.numexpt = 0
         self.experiment_dict = {}
+        self.assigneddays=None
+        self.final_list = []
+        self.tcl_codes_list = []
+        self.treatmentlist = None
+        self.controllist = None
+        self.joinedshuffle = None
         
         
         # initialising functions, instance object will call on functions 
@@ -299,9 +122,65 @@ class number_of_controls:
             return False
              # if value inputed for the number of experiments that the experimenter does in 1 day is not valid  
              # a message box is shown to ask the experimenter to give another value
+             
+       
+             
+    def codegenerator(self): 
+        """generates lowercase 3 letter codes for the total number of controls and treatments to be conducted"""
+
+        totalsample = self.controls + self.treatments       
+
+        #checking is done first to fulfill that total number of samples does not exceed 17576.
+        #17576 = 26^3(total number of permutations of 3-letter codes before repeats can occur)
+        if totalsample >= 17576:
+
+            print("Please make sure that control and treatment experiments do not exceed 17576 experiments")
+
+        else:
+            #operations below is not necessary as logtotalsample returns an increasingly small value(=1) as the size of  
+            #totalsample increase, hence I have comment out the formulas below. 
+            #logtotalsample = math.log(totalsample,26)
+            #roundedtotal = math.ceil(logtotalsample)
+
+            letters_lc = list(string.ascii_lowercase)
+            tcl_codes = list(permutations(letters_lc, 3))
+
+            self.tcl_codes_list = []
+            for c in range(totalsample):
+                self.tcl_codes_list.append(''.join(random.choice(tcl_codes)))
+
+            return self.tcl_codes_list
+        
+        
+    def assigncodes(self):
+        """assigning codes from the codegenerator to the treatments and controls list"""
+        
+        if len(self.tcl_codes_list) == 0 :
+
+            self.codegenerator()
+            
+            nums = [self.controls, self.treatments]
+            it = iter(self.tcl_codes_list)
+            separate = [[next(it) for _ in range(num)] for num in nums]
+            
+            #assigning first portion of codes to treatmentlist
+            #treatment codes are capitalised first to provide an unblinded version of table.
+            self.treatmentlist = copy.deepcopy(separate[0])
+            self.treatmentlist = [t.upper() for t in self.treatmentlist]
+            
+            #assigning remaining portion of codes to controllist
+            self.controllist = copy.deepcopy(separate[1])
+            
+            #compiling the codes in "joinedshuffle" again to reshuffle 
+            self.joinedshuffle = self.treatmentlist + self.controllist 
+    
+            #shuffling the new list after assigning codes to treatment and control list so the assigned codes are jumbled
+            self.final_list = random.shuffle(self.joinedshuffle)  
+            return self.final_list    
+    
 
            
-    def codegenerator(self): 
+    def codedisplays(self): 
         
         """
         generates 3 random letter codes for treatments and controls and 
@@ -314,11 +193,12 @@ class number_of_controls:
             # a message box will appear to tell the user that the experiment is not possible to carry out 
             
         else:
-            cg = CodeGenerator(self.controls, self.treatments, self.days, self.numexpt)
-            code_list = cg.codegenerator()
+            cg = self.codegenerator()
+            code_list = cg
             self.experiment_dict = {}
             for day in range(1, self.days+1):
                 self.experiment_dict[day] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
+               
                 # CodeGenerator class in called upon and a list of 3 letter codes is created using codegenerator function
                 # for every day a dictionary is created 
                 # the code list is spliced according to the number of experiments per day the experimenter has inputed 
@@ -328,14 +208,124 @@ class number_of_controls:
                 # in dictionary for the key day 1, the first 3 codes from the list of codes is taken and put into the dictionary as a value pair to the key
                             
             messagebox.showinfo("List", str(self.experiment_dict))
-            # a message box will appear showing the days and the 3 letter codes assigned to the days        
+            # a message box will appear showing the days and the 3 letter codes assigned to the days  
+            
     
-       
+  
+    def tabulateblind(self):
+        """this table is displayed in the output, since it is blinded. 
+           it is available for viewing as an output for everyone.
+           table can then be saved if the user wished to."""
+        
+        #.lower() is used to blind the uppercase treatments before displaying as an output
+        #"mimics" list will divide the "joinedshuffle" list of controls and treatments into equal chunks as decided by the user.
+        lowerlist = [y.lower() for y in self.joinedshuffle]
+        dayslist = ['Day ' + str(num) for num in range(1, days+1)]
+        mimics = [lowerlist[x:x+self.numexpt] for x in range(0, len(lowerlist), self.numexpt)]
 
+        if len(mimics) == len(dayslist):
+            combine = itertools.zip_longest(dayslist, mimics)
+            daysdict = dict(combine)
+
+            for key,value in daysdict.items():
+                print(key, value)
+                
+            print("-Assignment is Complete-")
+
+        if len(mimics) < len(dayslist):
+            
+            combine = itertools.zip_longest(dayslist, mimics)
+            daysdict = dict(combine)
+
+            for key,value in daysdict.items():
+                print(key, value)
+                
+            print("You have extra day(s) left for experiment.")
+
+        if len(mimics) > len(dayslist):
+            combine = itertools.zip_longest(dayslist, mimics)
+            daysdict = dict(combine)
+
+            for key,value in daysdict.items():
+                print(key, value)
+
+            print("Sorry, all of your experiments cannot be accommodated in the given timeframe.")
+            
+            
+    def tabulateunblind(self):
+        """this table is not displayed in the output, it is saved directly into a file to prevent viewing. 
+           it should not be seen by scientists conducting the experiments.
+           table should only be viewed by scientist planning and assigning roles to the ones conducting experiments."""
+           #this table is only set to being saved to a document and not produced as an output for user to see
+           #user can choose to see the table in the saved file
+        
+        #dayslist = ['Day ' + str(num) for num in range(1, days+1)]
+        #mimics = [self.joinedshuffle[x:x+self.numexpt] for x in range(0, len(self.joinedshuffle), self.numexpt)]
+        
+        acg = self.assigncodes()
+        assigncode_list = acg
+        self.assigned_dict = {}
+        
+        
+        flag = True
+        while flag: 
+
+            savefile = input('This is a unblinded table and can only be viewed after saving\nWould you like to save the table:\n1. Yes\n2. No\n?')
+
+            if savefile.isdigit():
+                savefile = int(savefile)
+
+            if savefile in range(1,3):
+                flag = False
+
+            else: 
+                print('Please enter a valid number')
+
+        if savefile == 1:
+            
+            filename = input('Enter a file name: ')
+
+            if len(mimics) == len(dayslist):
+                combine = itertools.zip_longest(dayslist, mimics)
+                daysdict = dict(combine)
+                
+                with open(filename, 'w') as wf:
+                    for key,value in daysdict.items():
+                        print(key, value, file = wf)
+
+                return "-Table has been saved-"
+
+            if len(mimics) < len(dayslist):
+
+                combine = itertools.zip_longest(dayslist, mimics)
+                daysdict = dict(combine)
+
+                with open(filename, 'w') as wf:
+                    for key,value in daysdict.items():
+                        print(key, value, file = wf)
+                        print("You have extra day(s) left for experiment.", file = wf)
+                        
+                return "-Table has been saved-"
+
+            if len(mimics) > len(dayslist):
+                combine = itertools.zip_longest(dayslist, mimics)
+                daysdict = dict(combine)
+
+                with open(filename, 'w') as wf:
+                    for key,value in daysdict.items():
+                        print(key, value, file = wf)
+                        print("Sorry, all of your experiments cannot be accommodated in the given timeframe.", file = wf)
+                        
+                return "-Table has been saved-"
+        
+        if savefile == 2:
+            
+            no = 'Your table has not been saved. Thank you very much for using this program.'
+            return no          
             
 
     
-noc = number_of_controls()
+noc = main_code()
 
 
 root = Tk()
@@ -377,7 +367,7 @@ def set_numexpt():
     t_button.grid(row=4, column=2)    
                 
 def cd_gen():
-   cd_button = Button(root, text="Press to generate codes", command= lambda: noc.codegenerator())
+   cd_button = Button(root, text="Press to generate codes", command= lambda: noc.codedisplays())
    cd_button.grid(row=5, column=1)
    
 def file_store_blind():
@@ -438,9 +428,6 @@ set_treatments()
 set_days()
 set_numexpt()
 cd_gen()
-file_store()
+file_store_blind()
 
 root.mainloop()
-
-
-
