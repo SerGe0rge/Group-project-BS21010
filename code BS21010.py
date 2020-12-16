@@ -338,10 +338,18 @@ class number_of_controls:
             cg = CodeGenerator(self.controls, self.treatments, self.days, self.numexpt)
             code_list = cg.codegenerator()
             experiment_dict = {}
-            for i in range(1, self.days+1):
-                experiment_dict[i] = code_list[(i-1) * self.numexpt: (i-1) * self.numexpt + self.numexpt]
+            for day in range(1, self.days+1):
+                experiment_dict[day] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
+                # CodeGenerator class in called upon and a list of 3 letter codes is created using codegenerator function
+                # for every day a dictionary is created 
+                # the code list is spliced according to the number of experiments per day the experimenter has inputed 
+                # e.g  if the number of experiments done per day is 3 and it is for the first day
+                # code_list[(1-1) * 3 : (1-1) * 3 + 3]
+                # code_list[0:3]
+                # in dictionary for the key day 1, the first 3 codes from the list of codes is taken and put into the dictionary as a value pair to the key
                             
             messagebox.showinfo("List", str(experiment_dict))
+            # a message box will appear showing the days and the 3 letter codes assigned to the days
             
 
     
