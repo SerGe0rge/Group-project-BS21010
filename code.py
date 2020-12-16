@@ -316,9 +316,9 @@ class number_of_controls:
         else:
             cg = CodeGenerator(self.controls, self.treatments, self.days, self.numexpt)
             code_list = cg.codegenerator()
-            experiment_dict = {}
+            self.experiment_dict = {}
             for day in range(1, self.days+1):
-                experiment_dict[day] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
+                self.experiment_dict[day] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
                 # CodeGenerator class in called upon and a list of 3 letter codes is created using codegenerator function
                 # for every day a dictionary is created 
                 # the code list is spliced according to the number of experiments per day the experimenter has inputed 
@@ -327,7 +327,7 @@ class number_of_controls:
                 # code_list[0:3]
                 # in dictionary for the key day 1, the first 3 codes from the list of codes is taken and put into the dictionary as a value pair to the key
                             
-            messagebox.showinfo("List", str(experiment_dict))
+            messagebox.showinfo("List", str(self.experiment_dict))
             # a message box will appear showing the days and the 3 letter codes assigned to the days        
     
        
@@ -380,29 +380,48 @@ def cd_gen():
    cd_button = Button(root, text="Press to generate codes", command= lambda: noc.codegenerator())
    cd_button.grid(row=5, column=1)
    
-def file_store():
-    fs_button = Button(root, text="Press to start saving", command = file_name)
-    fs_button.grid(row=6, column=1)
+def file_store_blind():
+    fsb_button = Button(root, text="Press to start saving blind timetable", command = file_save_blind)
+    fsb_button.grid(row=6, column=1)
 
-def file_name():
-     mb = messagebox.askquestion('Save','Would you like to save your timetable?')
+def file_store_unblind():
+    fsu_button = Button(root, text="Press to start saving unblind timetable", command = file_save_unblind)
+    fsu_button.grid(row=7, column=1)
+
+
+def file_save_blind():
+     mb = messagebox.askquestion('Save','Would you like to save your blind timetable?')
         
      if mb == 'yes':
        filesave = filedialog.asksaveasfilename(
-                defaultextension='.pdf', filetypes=[("pdf files", '*.pdf')],
+                defaultextension='.txt', filetypes=[("txt files", '*.txt')],
                 title="Choose filename")
        with open(filesave, 'w') as wf:
-           for key,value in noc.codegenerator(experiment_dict):
-              print(key, value, file = wf)
+           for key in noc.experiment_dict:
+              print(key, noc.experiment_dict[key], file = wf)
                 #f.write(pdf.dumps(s)) 
-       message.box.showinfo('Save', 'Thank you your file has been saved')
+       messagebox.showinfo('Save', 'Thank you! Your file has been saved')
 
      else:
-            messagebox.showinfo('Save', "Your timetable has not been saved")
-    
-   # def file_save():
+            messagebox.showinfo('Save', "Your blind timetable has not been saved")
+
+def file_save_unblind():
+     mb = messagebox.askquestion('Save','Would you like to save your unblind timetable?')
         
-        #with open(filename_text, 'w') as wf:
+     if mb == 'yes':
+       filesave = filedialog.asksaveasfilename(
+                defaultextension='.txt', filetypes=[("txt files", '*.txt')],
+                title="Choose filename")
+       with open(filesave, 'w') as wf:
+           for key in noc.experiment_dict:
+              print(key, noc.experiment_dict[key], file = wf)
+                #f.write(pdf.dumps(s)) 
+       messagebox.showinfo('Save', 'Thank you! Your file has been saved')
+
+     else:
+            messagebox.showinfo('Save', "Your unblind timetable has not been saved")
+    
+
             
           
              
