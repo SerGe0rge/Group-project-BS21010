@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Dec 16 11:04:31 2020
+import random
+import string
+from itertools import permutations
+import math
+from tkinter import *
+from tkniter import filedialog
 
-@author: sophiestavrides
-"""
 
 class main_code:
     
@@ -330,21 +330,28 @@ class main_code:
 noc = main_code()
 
 
-root = Tk()
-root.geometry("1200x1200")
-root.title("Experimental design")
+root = Tk() #root acts as our main window, all widgets need the parameter root to appear in this GUI window
+root.geometry("1200x1200") #creates a GUI window with the arbitrary values specified
+root.title("Experimental design") #creates a title for the GUI window
       
-
+#Label() places a piece of text on the GUI window 
+#.grid() places any GUI widget on the GUI window in the position specified with row and column parameters in .grid()
+#Button() places a button on the GUI that when pressed initiates the command in the parameters
+#command parameter in Button() allows us to call functions from the class main_code when a button is pressed
+#Entry() creates an entry box on the GUI window for the user to input values into it 
+#.get() retrieves the value the user put in the entry box
 
 def set_controls():
-    label_c = Label(root, text="Enter number of controls: ")
+    '''Generates GUI to allow the user to input the number of controls in the trial taking place and check if its an acceptable value to be stored so that the sample codes can be generated later'''
+    label_c = Label(root, text="Enter number of controls: ")  
     label_c.grid(row=1, column= 0)
-    controls_eb = Entry(root, width= 50)
+    controls_eb = Entry(root, width= 50)  
     controls_eb.grid(row=1, column= 1)
     c_button = Button(root, text="Press to check value of controls", command= lambda: noc.get_valid_controls(controls_eb.get()))
     c_button.grid(row=1, column=2)
     
 def set_treatments():
+    '''Generates GUI to allow the user to input the number of treatments in the trial taking place and check if its an acceptable value to be stored so that the sample codes can be generated later'''
     label_t = Label(root, text="Enter number of treatments: ")
     label_t.grid(row=2, column=0)
     treatments_eb = Entry(root, width=50)
@@ -353,6 +360,7 @@ def set_treatments():
     t_button.grid(row=2, column=2)   
 
 def set_days():
+    '''Generates GUI to allow the user to input the number of days over which the experiment will take place and store it by checking the value so that a timetable can be produced later'''
     label_d = Label(root, text="Enter number of days: ")
     label_d.grid(row=3, column=0)
     days_eb = Entry(root, width=50)
@@ -361,6 +369,7 @@ def set_days():
     d_button.grid(row=3, column=2)
 
 def set_numexpt():
+    '''Generates GUI to allow the user to input the number of experiments that will take place per day and store it by checking the value so that a timetable can be produced later'''
     label_n = Label(root, text="Enter number of experiments: ")
     label_n.grid(row=4, column=0)
     numexpt_eb = Entry(root, width=50)
@@ -369,49 +378,52 @@ def set_numexpt():
     t_button.grid(row=4, column=2)    
                 
 def cd_gen():
+   '''Creates a button in the GUI to allow the user to press it and show the codes generated for their experiment'''
    cd_button = Button(root, text="Press to generate codes", command= lambda: noc.codedisplays())
    cd_button.grid(row=5, column=1)
    
 def file_store_blind():
+    '''Creates a save button in the GUI to allow the user to save the blinded timetable created'''
     fsb_button = Button(root, text="Press to start saving blind timetable", command = file_save_blind)
     fsb_button.grid(row=6, column=1)
 
 def file_store_unblind():
+    '''Creates a save button in the GUI to allow the user to save the unblinded timetable created'''
     fsu_button = Button(root, text="Press to start saving unblind timetable", command = file_save_unblind)
     fsu_button.grid(row=7, column=1)
 
 
 def file_save_blind():
-     mb = messagebox.askquestion('Save','Would you like to save your blind timetable?')
+    '''Creates the option for the user to save the blind timetable under a file name of their choice'''
+    mb = messagebox.askquestion('Save','Would you like to save your blind timetable?') #provides option for user to save or not
         
-     if mb == 'yes':
-       filesave = filedialog.asksaveasfilename(
-                defaultextension='.txt', filetypes=[("txt files", '*.txt')],
-                title="Choose filename")
+    if mb == 'yes':
+       filesave = filedialog.asksaveasfilename( 
+                defaultextension='.txt', filetypes=[("txt files", '*.txt')], 
+                title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
        with open(filesave, 'w') as wf:
            for key in noc.experiment_dict:
-              print(key, noc.experiment_dict[key], file = wf)
-                #f.write(pdf.dumps(s)) 
-       messagebox.showinfo('Save', 'Thank you! Your file has been saved')
+              print(key, noc.experiment_dict[key], file = wf) #saves the blind timetable under filename specified before
+       messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
 
-     else:
-            messagebox.showinfo('Save', "Your blind timetable has not been saved")
+    else:
+            messagebox.showinfo('Save', "Your blind timetable has not been saved") #specifies file will not be saved
 
 def file_save_unblind():
-     mb = messagebox.askquestion('Save','Would you like to save your unblind timetable?')
+    '''Creates the option for the user to save the unblind timetable under a file name of their choice'''
+    mb = messagebox.askquestion('Save','Would you like to save your unblind timetable?') #provides option for user to save or not
         
-     if mb == 'yes':
+    if mb == 'yes':
        filesave = filedialog.asksaveasfilename(
                 defaultextension='.txt', filetypes=[("txt files", '*.txt')],
-                title="Choose filename")
-       with open(filesave, 'w') as wf:
+                title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
+       with open(filesave, 'w') as wf: 
            for key in noc.experiment_dict:
-              print(key, noc.experiment_dict[key], file = wf)
-                #f.write(pdf.dumps(s)) 
-       messagebox.showinfo('Save', 'Thank you! Your file has been saved')
+              print(key, noc.experiment_dict[key], file = wf) #saves the unblind timetable under filename specified before
+       messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
 
-     else:
-            messagebox.showinfo('Save', "Your unblind timetable has not been saved")
+    else:
+            messagebox.showinfo('Save', "Your unblind timetable has not been saved") #specifies file will not be saved
     
 
             
@@ -433,3 +445,5 @@ cd_gen()
 file_store_blind()
 
 root.mainloop()
+
+
