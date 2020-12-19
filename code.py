@@ -22,6 +22,7 @@ class main_code:
         self.treatmentlist = None
         self.controllist = None
         self.joinedshuffle = None
+        self.unblindedcode_list = None
         
         
         # initialising functions, instance object will call on functions 
@@ -175,10 +176,8 @@ class main_code:
             self.joinedshuffle = self.treatmentlist + self.controllist 
     
             #shuffling the new list after assigning codes to treatment and control list so the assigned codes are jumbled
-            self.final_list = copy.deepcopy(random.shuffle(self.joinedshuffle))  
-            draftlist =  random.shuffle(self.joinedshuffle)
-            final_list = copy.deepcopy(draftlist)
-            return self.final_list     
+            random.shuffle(self.joinedshuffle)
+            return self.joinedshuffle    
     
 
            
@@ -195,8 +194,15 @@ class main_code:
             # a message box will appear to tell the user that the experiment is not possible to carry out 
             
         else:
-            cg = self.codegenerator()
-            code_list = cg
+            cg = CodeGenerator(self.controls, self.treatments, self.days, self.numexpt)
+            cg.codegenerator()
+            
+            #producing and assigning unblinded codes to treatments and controls 
+            self.unblindedcode_list = cg.assigncodes()
+            
+            #since the codes have an identity of treatments and controls now, they can then be blinded to be generated
+            #as output
+            blindedcode_list = [x.lower() for x in unblindedcode_list]
             self.experiment_dict = {}
             for day in range(1, self.days+1):
                 self.experiment_dict[day] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
