@@ -19,3 +19,6 @@ Output:
 
 • A file containing the letters and the day they are assigned to 
 	◦ Only for experimenter to see, they should not know whether the letters are signed to control or treatment
+	
+	
+Final code file is FinalCode.py
