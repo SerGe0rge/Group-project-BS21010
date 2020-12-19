@@ -2,7 +2,7 @@
 """
 Created on Sat Dec 19 18:03:56 2020
 
-@author: Sarah Clayton
+@author: Georgis Sergidis, Jennie Yang, Devin Tan, Sarah Clayton
 """
 
 import random
@@ -24,14 +24,12 @@ class main_code:
         self.days = 0
         self.numexpt = 0
         self.experiment_dict = {}
-        self.assigneddays=None
-        self.final_list = []
+        self.lowerdict = {}
+        self.assigneddays = None
         self.tcl_codes_list = []
         self.treatmentlist = None
         self.controllist = None
         self.joinedshuffle = None
-        self.unblindedcode_list = []
-        self.blindedcode_list = []
         
         
         # initialising functions, instance object will call on functions 
@@ -137,24 +135,26 @@ class main_code:
              
     def codegenerator(self): 
         """generates lowercase 3 letter codes for the total number of controls and treatments to be conducted"""
-
+        
+        #totalsample takes the total number of treatments and controls the user inputs
         totalsample = self.controls + self.treatments       
 
-        #checking is done first to fulfill that total number of samples does not exceed 17576.
+        #If statement checks to fulfill that total number of samples does not exceed 17576.
         #17576 = 26^3(total number of permutations of 3-letter codes before repeats can occur)
         if totalsample >= 17576:
 
             print("Please make sure that control and treatment experiments do not exceed 17576 experiments")
 
         else:
-            #operations below is not necessary as logtotalsample returns an increasingly small value(=1) as the size of  
-            #totalsample increase, hence I have comment out the formulas below. 
-            #logtotalsample = math.log(totalsample,26)
-            #roundedtotal = math.ceil(logtotalsample)
-
+            #3 letter codes are generated using string and intertools imported above
+            #"letters_lc" represent a list containing all 26 alphabets
+            #permutations from itertools package produces combinations of 3 letter codes from "letters_lc" list
             letters_lc = list(string.ascii_lowercase)
             tcl_codes = list(permutations(letters_lc, 3))
-
+            
+            #empty self.tcl_codes_list is created for storing the generated 3 letter codes
+            #For loop is created to loop through the number of experiments(totalsample) to be conducted to append the various 3 letter codes
+            #self.tcl_codes_list is then returned from calling the function
             self.tcl_codes_list = []
             for c in range(totalsample):
                 self.tcl_codes_list.append(''.join(random.choice(tcl_codes)))
@@ -164,23 +164,33 @@ class main_code:
         
     def assigncodes(self):
         """assigning codes from the codegenerator to the treatments and controls list"""
-        random.shuffle(self.tcl_codes_list)
+        
+        #if statement checks if self.tcl_codes_list is empty, before running the self.codegenerator() function
         if len(self.tcl_codes_list) == 0 :
             self.codegenerator()
-           #this checks codes have been assigned 
+        
+        #"nums" list represents the number of controls and treatments the user has assigned
+        #values of self.tcl_codes_list is iterated so the list of codes can be cut into 2 chunks in "separate" list, 
+        #self.treatmentlist and self.controllist 
+        #"separate" list contains 2 list of codes, which will be assigned later 
         nums = [self.controls, self.treatments]
         it = iter(self.tcl_codes_list)
         separate = [[next(it) for _ in range(num)] for num in nums]
-        #code order is randomised 
-        #assigning first portion of codes for num specified by user to treatmentlist
+         
+        #assigning first list of codes from "separate" list to self.treatmentlist using index[0]
         #treatment codes are capitalised first to provide an unblinded version of table.
         self.treatmentlist = copy.deepcopy(separate[0])
         self.treatmentlist = [t.upper() for t in self.treatmentlist]
         
+        #assigning second list of codes from "separate" list to self.controllist using index[1]
+        self.controllist = copy.deepcopy(separate[1])
         
-        self.controllist = copy.deepcopy(separate[1])#assignes remaining codes to controls in lower case 
+        #self.controllist and self.treatmentlist are combined into self.joinedshuffle
+        #self.joinedshuffle list is shuffled using random.shuffle() so as to mix up the various treatment and control codes
+        self.joinedshuffle = self.controllist + self.treatmentlist
+        random.shuffle(self.joinedshuffle)
         
-        return str(self.treatmentlist), str(self.controllist)
+        return self.joinedshuffle
     
 
            
@@ -197,22 +207,34 @@ class main_code:
             # a message box will appear to tell the user that the experiment is not possible to carry out 
             
         else:
-            cg = self.codegenerator()
-            code_list = cg
+            #self.assigncodes() function is called to produce the list of codes(self.joinedshuffle) that have been assigned to either the treatments or the controls 
+            #codes in self.joinedshuffle list are initialised to lowercase and stored in code_list to produce a blinded display
+            cg = self.assigncodes()
+            code_list = [x.lower() for x in cg]
+            
+            #"self.experiment_dict" empty dictionary stores the unblinded codes
+            #"self.lowerdict" empty dictionary stores the blinded codes
             self.experiment_dict = {}
+            self.lowerdict = {}
+            
+            #For loops are created to assign respective key-value pairs into the respective dictionaries.
+            #The keys are the days while the values are the list of codes of experiments the scientists should conduct on the respective days
+            #Respective lists are spliced according to the number of experiments per day the experimenter has inputed
+            #e.g  if the number of experiments done per day is 3 and it is for the first day
+            #code_list[(1-1) * 3 : (1-1) * 3 + 3]
+            #code_list[0:3]
+            #in dictionary for the key day 1, the first 3 codes from the list of codes is taken and put into the dictionary as a value pair to the key
             for day in range(1, self.days+1):
-                self.experiment_dict['Day ' + str(day)] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
-               
-                # CodeGenerator class in called upon and a list of 3 letter codes is created using codegenerator function
-                # for every day a dictionary is created 
-                # the code list is spliced according to the number of experiments per day the experimenter has inputed 
-                # e.g  if the number of experiments done per day is 3 and it is for the first day
-                # code_list[(1-1) * 3 : (1-1) * 3 + 3]
-                # code_list[0:3]
-                # in dictionary for the key day 1, the first 3 codes from the list of codes is taken and put into the dictionary as a value pair to the key
-                
-            messagebox.showinfo("List", str(self.experiment_dict))
-            # a message box will appear showing the days and the 3 letter codes assigned to the days  
+                self.experiment_dict['Day ' + str(day)] = cg[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
+            
+            
+            for day in range(1, self.days+1):
+                self.lowerdict['Day ' + str(day)] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt] 
+              
+            #a message box will appear showing the days and the blinded 3 letter codes assigned to the days ensures that the table of unblinded 3 letter codes are confidential
+            #only for the scientist not conducting the experiment to view. 
+            messagebox.showinfo("List", str(self.lowerdict))
+             
 
         
         
@@ -290,8 +312,8 @@ def file_save_blind():
                 defaultextension='.txt', filetypes=[("txt files", '*.txt')], 
                 title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
        with open(filesave, 'w') as wf:
-           for key in noc.experiment_dict:
-              print(key, noc.experiment_dict[key], file = wf) #saves the blind timetable under filename specified before
+           for key in noc.lowerdict:
+              print(key, noc.lowerdict[key], file = wf) #saves the blind timetable under filename specified before
        messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
 
     else:
@@ -306,10 +328,9 @@ def file_save_unblind():
                 defaultextension='.txt', filetypes=[("txt files", '*.txt')],
                 title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
        with open(filesave, 'w') as wf:
-               treatment_list, control_list = noc.assigncodes()
-               wf.write('Treatment list: \n' + treatment_list) #saves the unblind lists under filename specified before
-               wf.write('\n')
-               wf.write('Control list: \n' + control_list)
+               for key in noc.experiment_dict:
+                   print(key, noc.experiment_dict[key], file = wf)
+               print('Capitalised 3-letter codes represent the treatments', file = wf)
        messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
 
     else:
