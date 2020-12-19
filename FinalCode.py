@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Dec 19 18:18:38 2020
+Created on Sat Dec 19 18:03:56 2020
 
-@author: sophiestavrides
+@author: Sarah Clayton
 """
 
 import random
@@ -165,20 +164,21 @@ class main_code:
         
     def assigncodes(self):
         """assigning codes from the codegenerator to the treatments and controls list"""
+        random.shuffle(self.tcl_codes_list)
         if len(self.tcl_codes_list) == 0 :
             self.codegenerator()
-           
+           #this checks codes have been assigned 
         nums = [self.controls, self.treatments]
         it = iter(self.tcl_codes_list)
         separate = [[next(it) for _ in range(num)] for num in nums]
-        
-        #assigning first portion of codes to treatmentlist
+        #code order is randomised 
+        #assigning first portion of codes for num specified by user to treatmentlist
         #treatment codes are capitalised first to provide an unblinded version of table.
         self.treatmentlist = copy.deepcopy(separate[0])
         self.treatmentlist = [t.upper() for t in self.treatmentlist]
         
-        #assigning remaining portion of codes to controllist
-        self.controllist = copy.deepcopy(separate[1])
+        
+        self.controllist = copy.deepcopy(separate[1])#assignes remaining codes to controls in lower case 
         
         return str(self.treatmentlist), str(self.controllist)
     
@@ -228,6 +228,7 @@ root.title("Experimental design") #creates a title for the GUI window
 #command parameter in Button() allows us to call functions from the class main_code when a button is pressed
 #Entry() creates an entry box on the GUI window for the user to input values into it 
 #.get() retrieves the value the user put in the entry box
+#write() enteres the text or text from command into a file 
 
 def set_controls():
     '''Generates GUI to allow the user to input the number of controls in the trial taking place and check if its an acceptable value to be stored so that the sample codes can be generated later'''
@@ -306,7 +307,7 @@ def file_save_unblind():
                 title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
        with open(filesave, 'w') as wf:
                treatment_list, control_list = noc.assigncodes()
-               wf.write('Treatment list: \n' + treatment_list) #saves the unblind timetable under filename specified before
+               wf.write('Treatment list: \n' + treatment_list) #saves the unblind lists under filename specified before
                wf.write('\n')
                wf.write('Control list: \n' + control_list)
        messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
