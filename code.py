@@ -3,7 +3,7 @@ import string
 from itertools import permutations
 import math
 from tkinter import *
-from tkniter import filedialog
+from tkinter import filedialog
 
 
 class main_code:
@@ -22,6 +22,8 @@ class main_code:
         self.treatmentlist = None
         self.controllist = None
         self.joinedshuffle = None
+        self.unblindedcode_list = []
+        self.blindedcode_list = []
         
         
         # initialising functions, instance object will call on functions 
@@ -182,7 +184,7 @@ class main_code:
     
 
            
-    def codedisplays(self): 
+    def codedisplays_blind(self): 
         
         """
         generates 3 random letter codes for treatments and controls and 
@@ -208,132 +210,18 @@ class main_code:
                 # code_list[(1-1) * 3 : (1-1) * 3 + 3]
                 # code_list[0:3]
                 # in dictionary for the key day 1, the first 3 codes from the list of codes is taken and put into the dictionary as a value pair to the key
-                            
+                
             messagebox.showinfo("List", str(self.experiment_dict))
             # a message box will appear showing the days and the 3 letter codes assigned to the days  
-            
-    
-  
-    def tabulateblind(self):
-        """this table is displayed in the output, since it is blinded. 
-           it is available for viewing as an output for everyone.
-           table can then be saved if the user wished to."""
-        
-        #.lower() is used to blind the uppercase treatments before displaying as an output
-        #"mimics" list will divide the "joinedshuffle" list of controls and treatments into equal chunks as decided by the user.
-        lowerlist = [y.lower() for y in self.joinedshuffle]
-        dayslist = ['Day ' + str(num) for num in range(1, days+1)]
-        mimics = [lowerlist[x:x+self.numexpt] for x in range(0, len(lowerlist), self.numexpt)]
 
-        if len(mimics) == len(dayslist):
-            combine = itertools.zip_longest(dayslist, mimics)
-            daysdict = dict(combine)
-
-            for key,value in daysdict.items():
-                print(key, value)
-                
-            print("-Assignment is Complete-")
-
-        if len(mimics) < len(dayslist):
-            
-            combine = itertools.zip_longest(dayslist, mimics)
-            daysdict = dict(combine)
-
-            for key,value in daysdict.items():
-                print(key, value)
-                
-            print("You have extra day(s) left for experiment.")
-
-        if len(mimics) > len(dayslist):
-            combine = itertools.zip_longest(dayslist, mimics)
-            daysdict = dict(combine)
-
-            for key,value in daysdict.items():
-                print(key, value)
-
-            print("Sorry, all of your experiments cannot be accommodated in the given timeframe.")
-            
-            
-    def tabulateunblind(self):
-        """this table is not displayed in the output, it is saved directly into a file to prevent viewing. 
-           it should not be seen by scientists conducting the experiments.
-           table should only be viewed by scientist planning and assigning roles to the ones conducting experiments."""
-           #this table is only set to being saved to a document and not produced as an output for user to see
-           #user can choose to see the table in the saved file
-        
-        #dayslist = ['Day ' + str(num) for num in range(1, days+1)]
-        #mimics = [self.joinedshuffle[x:x+self.numexpt] for x in range(0, len(self.joinedshuffle), self.numexpt)]
-        
-        acg = self.assigncodes()
-        assigncode_list = acg
-        self.assigned_dict = {}
         
         
-        flag = True
-        while flag: 
-
-            savefile = input('This is a unblinded table and can only be viewed after saving\nWould you like to save the table:\n1. Yes\n2. No\n?')
-
-            if savefile.isdigit():
-                savefile = int(savefile)
-
-            if savefile in range(1,3):
-                flag = False
-
-            else: 
-                print('Please enter a valid number')
-
-        if savefile == 1:
-            
-            filename = input('Enter a file name: ')
-
-            if len(mimics) == len(dayslist):
-                combine = itertools.zip_longest(dayslist, mimics)
-                daysdict = dict(combine)
-                
-                with open(filename, 'w') as wf:
-                    for key,value in daysdict.items():
-                        print(key, value, file = wf)
-
-                return "-Table has been saved-"
-
-            if len(mimics) < len(dayslist):
-
-                combine = itertools.zip_longest(dayslist, mimics)
-                daysdict = dict(combine)
-
-                with open(filename, 'w') as wf:
-                    for key,value in daysdict.items():
-                        print(key, value, file = wf)
-                        print("You have extra day(s) left for experiment.", file = wf)
-                        
-                return "-Table has been saved-"
-
-            if len(mimics) > len(dayslist):
-                combine = itertools.zip_longest(dayslist, mimics)
-                daysdict = dict(combine)
-
-                with open(filename, 'w') as wf:
-                    for key,value in daysdict.items():
-                        print(key, value, file = wf)
-                        print("Sorry, all of your experiments cannot be accommodated in the given timeframe.", file = wf)
-                        
-                return "-Table has been saved-"
-        
-        if savefile == 2:
-            
-            no = 'Your table has not been saved. Thank you very much for using this program.'
-            return no          
-            
-
     
 noc = main_code()
-
 
 root = Tk() #root acts as our main window, all widgets need the parameter root to appear in this GUI window
 root.geometry("1200x1200") #creates a GUI window with the arbitrary values specified
 root.title("Experimental design") #creates a title for the GUI window
-      
 #Label() places a piece of text on the GUI window 
 #.grid() places any GUI widget on the GUI window in the position specified with row and column parameters in .grid()
 #Button() places a button on the GUI that when pressed initiates the command in the parameters
@@ -377,21 +265,26 @@ def set_numexpt():
     t_button = Button(root, text= "Press to check value of number of experiments", command= lambda: noc.get_valid_numexpt(numexpt_eb.get()))
     t_button.grid(row=4, column=2)    
                 
-def cd_gen():
-   '''Creates a button in the GUI to allow the user to press it and show the codes generated for their experiment'''
-   cd_button = Button(root, text="Press to generate codes", command= lambda: noc.codedisplays())
+def cd_gen_blind():
+   '''Creates a button in the GUI to allow the user to press it and show the blind codes generated for their experiment'''
+   cd_button = Button(root, text="Press to generate blind codes", command= lambda: noc.codedisplays_blind())
    cd_button.grid(row=5, column=1)
+
+def cd_gen_unblind():
+    '''Creates a button in the GUI to allow the user to press it and show the unblinded codes generated for their experiment'''
+    cd_button = Button(root, text="Press to generate unblind codes", command= lambda: noc.codedisplays_unblind())
+    cd_button.grid(row=6, column=1)
+    
    
 def file_store_blind():
     '''Creates a save button in the GUI to allow the user to save the blinded timetable created'''
     fsb_button = Button(root, text="Press to start saving blind timetable", command = file_save_blind)
-    fsb_button.grid(row=6, column=1)
+    fsb_button.grid(row=7, column=1)
 
 def file_store_unblind():
     '''Creates a save button in the GUI to allow the user to save the unblinded timetable created'''
     fsu_button = Button(root, text="Press to start saving unblind timetable", command = file_save_unblind)
-    fsu_button.grid(row=7, column=1)
-
+    fsu_button.grid(row=8, column=1)
 
 def file_save_blind():
     '''Creates the option for the user to save the blind timetable under a file name of their choice'''
@@ -418,8 +311,7 @@ def file_save_unblind():
                 defaultextension='.txt', filetypes=[("txt files", '*.txt')],
                 title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
        with open(filesave, 'w') as wf: 
-           for key in noc.experiment_dict:
-              print(key, noc.experiment_dict[key], file = wf) #saves the unblind timetable under filename specified before
+              print(noc.assigncodes(final_list), file = wf) #saves the unblind timetable under filename specified before
        messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
 
     else:
@@ -427,22 +319,20 @@ def file_save_unblind():
     
 
             
-          
+         
              
 
 
    
-
-    
-        
-
-
 set_controls()
 set_treatments()
 set_days()
 set_numexpt()
-cd_gen()
+cd_gen_blind()
+cd_gen_unblind()
 file_store_blind()
+file_store_unblind()
+
 
 root.mainloop()
 
