@@ -72,6 +72,7 @@ class CodeGenerator():
 
         #shuffling the new list after assigning codes to treatment and control list so the assigned codes are jumbled
         random.shuffle(self.joinedshuffle)
+        return self.joinedshuffle
         
     def tabulateblind(self):
         """this table is displayed in the output, since it is blinded. 
@@ -221,6 +222,7 @@ class number_of_controls:
         self.treatments = 0
         self.days = 0
         self.numexpt = 0
+        self.unblindedcode_list = None
         
         # initialising functions, instance object will call on functions 
         # variables first set to 0 as they are yet to be defined 
@@ -336,10 +338,17 @@ class number_of_controls:
             
         else:
             cg = CodeGenerator(self.controls, self.treatments, self.days, self.numexpt)
-            code_list = cg.codegenerator()
-            experiment_dict = {}
+            cg.codegenerator()
+            
+            #producing and assigning unblinded codes to treatments and controls 
+            self.unblindedcode_list = cg.assigncodes()
+            
+            #since the codes have an identity of treatments and controls now, they can then be blinded to be generated
+            #as output
+            blindedcode_list = [x.lower() for x in unblindedcode_list]
+            
             for day in range(1, self.days+1):
-                experiment_dict[day] = code_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
+                experiment_dict[day] = blindedcode_list[(day-1) * self.numexpt : (day-1) * self.numexpt + self.numexpt]
                 # CodeGenerator class in called upon and a list of 3 letter codes is created using codegenerator function
                 # for every day a dictionary is created 
                 # the code list is spliced according to the number of experiments per day the experimenter has inputed 
