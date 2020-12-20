@@ -8,7 +8,6 @@ Created on Sat Dec 19 18:03:56 2020
 import random
 import string
 from itertools import permutations
-import math
 from tkinter import *
 from tkinter import filedialog
 import copy
