@@ -42,7 +42,7 @@ class main_code:
         """
         
         try:
-            value=int(controls)
+            value=int(controls) #converts the value inputted by a user into an integer
             
             if value>0 and value<26**3:
                 self.controls = int(controls)
@@ -67,7 +67,7 @@ class main_code:
         """
         
         try:
-            value=int(treatments)
+            value=int(treatments) #converts the value inputted by a user into an integer
             
             if value>0 and value<26**3:
                 self.treatments = int(treatments)
@@ -92,7 +92,7 @@ class main_code:
         """
         
         try:
-            value=int(days)
+            value=int(days) #converts the value inputted by a user into an integer
             
             if value>0:
                 self.days = int(days)
@@ -115,7 +115,7 @@ class main_code:
         """
         
         try:
-            value=int(numexpt)
+            value=int(numexpt) #converts the value inputted by a user into an integer
             
             if value>0:
                 self.numexpt = int(numexpt)
@@ -239,7 +239,7 @@ class main_code:
         
         
     
-noc = main_code()
+noc = main_code() #calls upon the main_code() class
 
 root = Tk() #root acts as our main window, all widgets need the parameter root to appear in this GUI window
 root.geometry("1200x1200") #creates a GUI window with the arbitrary values specified
@@ -250,7 +250,6 @@ root.title("Experimental design") #creates a title for the GUI window
 #command parameter in Button() allows us to call functions from the class main_code when a button is pressed
 #Entry() creates an entry box on the GUI window for the user to input values into it 
 #.get() retrieves the value the user put in the entry box
-#write() enteres the text or text from command into a file 
 
 def set_controls():
     '''Generates GUI to allow the user to input the number of controls in the trial taking place and check if its an acceptable value to be stored so that the sample codes can be generated later'''
@@ -307,7 +306,7 @@ def file_save_blind():
     '''Creates the option for the user to save the blind timetable under a file name of their choice'''
     mb = messagebox.askquestion('Save','Would you like to save your blind timetable?') #provides option for user to save or not
         
-    if mb == 'yes':
+    if mb == 'yes': #if the user wants to save the blind timetable and presses yes this if loop runs to complete the saving process
        filesave = filedialog.asksaveasfilename( 
                 defaultextension='.txt', filetypes=[("txt files", '*.txt')], 
                 title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
@@ -321,23 +320,23 @@ def file_save_blind():
 
 def file_save_unblind():
     '''Creates the option for the user to save the unblind timetable under a file name of their choice'''
-    mb = messagebox.askquestion('Save','Would you like to save your unblind timetable?') #provides option for user to save or not
+    mb = messagebox.askquestion('Save','Would you like to save your unblind codes?') #provides option for user to save or not
         
-    if mb == 'yes':
+    if mb == 'yes': #if the user wants to save the unblind codes and presses yes this if loop runs to complete the saving process
        filesave = filedialog.asksaveasfilename(
                 defaultextension='.txt', filetypes=[("txt files", '*.txt')],
                 title="Choose filename") #filedialog.asksaveasfilename allows the user to choose a name for their file and save it where they want to on their device
        with open(filesave, 'w') as wf:
                for key in noc.experiment_dict:
-                   print(key, noc.experiment_dict[key], file = wf)
+                   print(key, noc.experiment_dict[key], file = wf) 
                print('Capitalised 3-letter codes represent the treatments', file = wf)
        messagebox.showinfo('Save', 'Thank you! Your file has been saved') #confirms the file has been saved
 
     else:
-            messagebox.showinfo('Save', "Your unblind timetable has not been saved") #specifies file will not be saved
-    
+            messagebox.showinfo('Save', "Your unblind codes has not been saved") #specifies file will not be saved
    
-set_controls()
+#The below series of code calls upon the functions needed to run the program as intended 
+set_controls()    
 set_treatments()
 set_days()
 set_numexpt()
@@ -346,4 +345,4 @@ file_store_blind()
 file_store_unblind()
 
 
-root.mainloop()
+root.mainloop() #part of the code needed to initialise the GUI window
